@@ -1,5 +1,5 @@
 # Trabalho de Aprendizagem de Máquina
 
 ## Equipe:
-### Andreza Fernandes
-### Manuel Edvar
+-> Andreza Fernandes
+-> Manuel Edvar
