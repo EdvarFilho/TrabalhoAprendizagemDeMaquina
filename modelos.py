@@ -39,6 +39,7 @@ def sigmoide(row, w):
 
 # Função responsável para treinar o modelo de Regressão Logística via Gradiente Descendente
 def fitRL(x, y, n_epochs, alpha):
+    print("[Regressão Logística] Treinando modelo...")
     erroQM = []
     wPrev = np.zeros(x.shape[1]+1)
     aux = np.ones((x.shape[0], 1))
@@ -58,6 +59,7 @@ def fitRL(x, y, n_epochs, alpha):
 
 # Função responsável para predizer os dados
 def predictRL(w, x):
+    print("[Regressão Logística] Testando modelo...")
     yPredito = []
     aux = np.ones((x.shape[0], 1))
     x = np.hstack((aux, x))
@@ -77,6 +79,7 @@ def predictRL(w, x):
 # Função responsável para "treinar" que gera os dados estatísticos necessários para o modelo de 
 # Análise de Discriminante Gaussiano
 def fitAGD(x, y):
+    print("[Análise Discriminante Gaussiana] Treinando modelo...")
     classes, ocorrencs = np.unique(y, return_counts=True) # pegando as classes e ocorrencias
     numClasses = len(classes) # numero de classes
     n = len(y) # numero de linhas do dataset
@@ -114,6 +117,7 @@ def predict1AGD(model, row):
     
 # Função utilizada para predizer as classes de um conjunto de registros
 def predictAGD(model, x_test):
+    print("[Análise Discriminante Gaussiana] Testando modelo...")
     yPredito = np.array([predict1AGD(model, row) for row in x_test])
     return yPredito
 
@@ -135,6 +139,7 @@ def getClasses(y):
 
 # Função responsável por predizer a classe de um único registro
 def predict1KNN(x, y, x_teste, k, function):
+    
     classes = getClasses(y)
     results = []
     for i in range(0, x.shape[0]):
@@ -149,6 +154,7 @@ def predict1KNN(x, y, x_teste, k, function):
                 dictClasses[row] += 1
     
     # retornar a chave que tem maior contagem
+    
     minimus = [results[i][1] for i in range (0,k)]
     
     contClasses = [(x, minimus.count(x)) for x in set(minimus)]
@@ -159,6 +165,8 @@ def predict1KNN(x, y, x_teste, k, function):
 
 # Função utilizada para predizer as classes de um conjunto de registros
 def predictKNN(x, y, x_test, k, function):
+    print("[KNN] Treinando modelo...")
+    print("[KNN] Testando modelo...")
     yPredito = [predict1KNN(x, y, row, k, function) for row in x_test]
     return yPredito
 
@@ -170,18 +178,24 @@ def predictKNN(x, y, x_test, k, function):
 
 # Função responsável por treinar a Árvore de Decisão e escolher os melhores hiperparâmetros por meio de grid-search
 def fitAD(x, y):
+    print("[Árvore de Decisão] Selecionando hiperparâmetros...")
     listMaxDepth = range(1, 50)
     configTree = {'criterion':['gini','entropy'],'max_depth':listMaxDepth}
     clf = GridSearchCV(DecisionTreeClassifier(), configTree)
+    
+    print("[Árvore de Decisão] Treinando modelos...")
     clf.fit(x, y)
-    params = clf.best_params_
-    print("Parâmetros escolhidos para Árvore de Decisão: ",params)
-    tree = DecisionTreeClassifier(criterion = params['criterion'], max_depth=params['max_depth'])
-    return tree
+    
+    #params = clf.best_params_
+    print("Parâmetros escolhidos para Árvore de Decisão: ", clf.best_params_)
+    #tree = DecisionTreeClassifier(criterion = params['criterion'], max_depth=params['max_depth'])
+    #return tree
+    return clf
 
 # Função que prediz a classe de um conjunto ou um único registro
 def predictAD(tree, x, y, x_test):
-    tree.fit(x, y)   
+    #tree.fit(x, y)   
+    print("[Árvore de Decisão] Testando modelos...")
     yPredito = tree.predict(x_test)
     return yPredito
 
@@ -193,6 +207,7 @@ def predictAD(tree, x, y, x_test):
 
 # Função responsável por treinar o SVM e escolher os melhores hiperparâmetros por meio de grid-search
 def fitSVM(x, y):
+    print("[SVM] Selecionando hiperparâmetros...")
     model = SVC(gamma='auto')
     configSVM = [{'kernel': ['rbf'], 'C': 2 ** np.arange(-5.0, 16.0, 2),
                                   'gamma': 2 ** np.arange(-15.0, 4.0, 2)},
@@ -201,18 +216,24 @@ def fitSVM(x, y):
                   {'kernel': ['linear'], 'C': 2 ** np.arange(-5.0, 16.0, 2)}]
 
     clf = GridSearchCV(model, configSVM, n_jobs=-1)
+    
+    print("[SVM] Treinando Modelo...")
     clf.fit(x, y)
-    params = clf.best_params_
-    print("Parâmetros escolhidos para SVM: ",params)
-    if(params['kernel']=='rbf'):
-        svm = SVC(kernel = params['kernel'], C = params['C'], gamma = params['gamma'])
-    if(params['kernel']=='poly'):
-        svm = SVC(gamma = 'auto', kernel = params['kernel'], C = params['C'], degree = params['degree'])
-    return svm
+    
+    #params = 
+    print("[SVM] Hiperparâmetros escolhidos para SVM: ", clf.best_params_)
+    
+    #if(params['kernel']=='rbf'):
+    #    svm = SVC(kernel = params['kernel'], C = params['C'], gamma = params['gamma'])
+    #if(params['kernel']=='poly'):
+    #    svm = SVC(gamma = 'auto', kernel = params['kernel'], C = params['C'], degree = params['degree'])
+    #return svm
+    return clf
 
 # Função que prediz a classe de um conjunto ou um único registro
 def predictSVM(svm, x, y, x_test):
-    svm.fit(x, y)
+    #svm.fit(x, y)
+    print("[SVM] Testando Modelo...")
     yPredito = svm.predict(x)
     return yPredito
 
@@ -224,19 +245,27 @@ def predictSVM(svm, x, y, x_test):
 
 # Função responsável por treinar o Random Forest e escolher os melhores hiperparâmetros por meio de grid-search
 def fitRF(x, y):
+    print("[RANDOM FOREST] Selecionando hiperparâmetros...")
     listEstimators = range(100, 150)
     listMaxDepth = range(1, 10)
+   
     configRandom = {'criterion':['gini','entropy'],'n_estimators':listEstimators, 'max_depth':listMaxDepth}
     clf = GridSearchCV(RandomForestClassifier(), configRandom)
+    
+    print("[RANDOM FOREST] Treinando modelo...")
     clf.fit(x,y)
-    params = clf.best_params_
-    print("Parâmetros escolhidos para Radom Forest: ",params)
-    randomForest = RandomForestClassifier(criterion = params['criterion'], max_depth=params['max_depth'], n_estimators=params['n_estimators'])
-    return randomForest
+    
+    #params = clf.best_params_
+    print("[RANDOM FOREST] Hiperparâmetros escolhidos para Radom Forest: ", clf.best_params_)
+    
+    #randomForest = RandomForestClassifier(criterion = params['criterion'], max_depth=params['max_depth'], n_estimators=params['n_estimators'])
+    #return randomForest
+    return clf
 
 # Função que prediz a classe de um conjunto ou um único registro
 def predictRF(randomForest, x, y, x_test):
-    randomForest.fit(x, y)
+    #randomForest.fit(x, y)
+    print("[RANDOM FOREST] Testando modelo...")
     yPredito = randomForest.predict(x)
     return yPredito
 
