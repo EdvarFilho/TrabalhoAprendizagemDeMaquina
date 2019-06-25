@@ -107,7 +107,7 @@ def predict1AGD(model, row):
     probabilits = np.zeros(model['numClasses'])
     for classe in model['classes']:
         classe = int(classe)
-        fator1 = 1/(sqrt(np.linalg.det(model['covar'][:, :, classe])) * ((2*pi)**(model['numFeatures']/2)))
+        fator1 = 1/((sqrt(np.linalg.det(model['covar'][:, :, classe])) * ((2*pi)**(model['numFeatures']/2)))+10**-6) 
         
         inversa = np.linalg.inv(model['covar'][:, :, classe])
         difXMedia = row - model['media'][:, classe]
@@ -160,7 +160,7 @@ def predict1KNN(x, y, x_teste, k, function):
     contClasses = [(x, minimus.count(x)) for x in set(minimus)]
 
     maximo = np.argmax(contClasses, axis=0)
-    
+
     return contClasses[maximo[1]][0]
 
 # Função utilizada para predizer as classes de um conjunto de registros
@@ -177,17 +177,17 @@ def predictKNN(x, y, x_test, k, function):
 
 
 # Função responsável por treinar a Árvore de Decisão e escolher os melhores hiperparâmetros por meio de grid-search
-def fitAD(x, y):
-    print("[Árvore de Decisão] Selecionando hiperparâmetros...")
-    listMaxDepth = range(1, 50)
-    configTree = {'criterion':['gini','entropy'],'max_depth':listMaxDepth}
-    clf = GridSearchCV(DecisionTreeClassifier(), configTree)
+def fitAD(x, y, criterion, max_depth):
+    # print("[Árvore de Decisão] Selecionando hiperparâmetros...")
+    # listMaxDepth = range(1, 50)
+    # configTree = {'criterion':['gini','entropy'],'max_depth':listMaxDepth}
+    clf = DecisionTreeClassifier(criterion = criterion, max_depth = max_depth)
     
     print("[Árvore de Decisão] Treinando modelos...")
     clf.fit(x, y)
     
     #params = clf.best_params_
-    print("Parâmetros escolhidos para Árvore de Decisão: ", clf.best_params_)
+    #print("Parâmetros escolhidos para Árvore de Decisão: ", clf.best_params_)
     #tree = DecisionTreeClassifier(criterion = params['criterion'], max_depth=params['max_depth'])
     #return tree
     return clf
@@ -206,22 +206,22 @@ def predictAD(tree, x, y, x_test):
 
 
 # Função responsável por treinar o SVM e escolher os melhores hiperparâmetros por meio de grid-search
-def fitSVM(x, y):
-    print("[SVM] Selecionando hiperparâmetros...")
-    model = SVC(gamma='auto')
-    configSVM = [{'kernel': ['rbf'], 'C': 2 ** np.arange(-5.0, 16.0, 2),
-                                  'gamma': 2 ** np.arange(-15.0, 4.0, 2)},
-                  {'kernel': ['poly'], 'C': 2 ** np.arange(-5.0, 16.0, 2),
-                                    'degree': np.arange(2, 6)},
-                  {'kernel': ['linear'], 'C': 2 ** np.arange(-5.0, 16.0, 2)}]
+def fitSVM(x, y, kernel, C):
+    # print("[SVM] Selecionando hiperparâmetros...")
+    # model = SVC(gamma='auto')
+    # configSVM = [{'kernel': ['rbf'], 'C': 2 ** np.arange(-5.0, 16.0, 2),
+    #                              'gamma': 2 ** np.arange(-15.0, 4.0, 2)},
+    #              {'kernel': ['poly'], 'C': 2 ** np.arange(-5.0, 16.0, 2),
+    #                                'degree': np.arange(2, 6)},
+    #              {'kernel': ['linear'], 'C': 2 ** np.arange(-5.0, 16.0, 2)}]
 
-    clf = GridSearchCV(model, configSVM, n_jobs=-1)
+    clf = SVC(gamma='auto', kernel = kernel, C = C)
     
     print("[SVM] Treinando Modelo...")
     clf.fit(x, y)
     
     #params = 
-    print("[SVM] Hiperparâmetros escolhidos para SVM: ", clf.best_params_)
+    # print("[SVM] Hiperparâmetros escolhidos para SVM: ", clf.best_params_)
     
     #if(params['kernel']=='rbf'):
     #    svm = SVC(kernel = params['kernel'], C = params['C'], gamma = params['gamma'])
@@ -234,7 +234,7 @@ def fitSVM(x, y):
 def predictSVM(svm, x, y, x_test):
     #svm.fit(x, y)
     print("[SVM] Testando Modelo...")
-    yPredito = svm.predict(x)
+    yPredito = svm.predict(x_test)
     return yPredito
 
 
@@ -244,19 +244,19 @@ def predictSVM(svm, x, y, x_test):
 
 
 # Função responsável por treinar o Random Forest e escolher os melhores hiperparâmetros por meio de grid-search
-def fitRF(x, y):
-    print("[RANDOM FOREST] Selecionando hiperparâmetros...")
-    listEstimators = range(100, 150)
-    listMaxDepth = range(1, 10)
+def fitRF(x, y, criterion, n_estimators, max_depth):
+    # print("[RANDOM FOREST] Selecionando hiperparâmetros...")
+    # listEstimators = range(100, 150)
+    # listMaxDepth = range(1, 10)
    
-    configRandom = {'criterion':['gini','entropy'],'n_estimators':listEstimators, 'max_depth':listMaxDepth}
-    clf = GridSearchCV(RandomForestClassifier(), configRandom)
+    # configRandom = {'criterion':['gini','entropy'],'n_estimators':listEstimators, 'max_depth':listMaxDepth}
+    clf = RandomForestClassifier(criterion = criterion, n_estimators = n_estimators, max_depth=max_depth)
     
     print("[RANDOM FOREST] Treinando modelo...")
     clf.fit(x,y)
     
     #params = clf.best_params_
-    print("[RANDOM FOREST] Hiperparâmetros escolhidos para Radom Forest: ", clf.best_params_)
+    #print("[RANDOM FOREST] Hiperparâmetros escolhidos para Radom Forest: ", clf.best_params_)
     
     #randomForest = RandomForestClassifier(criterion = params['criterion'], max_depth=params['max_depth'], n_estimators=params['n_estimators'])
     #return randomForest
@@ -266,6 +266,6 @@ def fitRF(x, y):
 def predictRF(randomForest, x, y, x_test):
     #randomForest.fit(x, y)
     print("[RANDOM FOREST] Testando modelo...")
-    yPredito = randomForest.predict(x)
+    yPredito = randomForest.predict(x_test)
     return yPredito
 
