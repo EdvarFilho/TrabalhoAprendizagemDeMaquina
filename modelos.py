@@ -178,16 +178,17 @@ def predictKNN(x, y, x_test, k, function):
 
 # Função responsável por treinar a Árvore de Decisão e escolher os melhores hiperparâmetros por meio de grid-search
 def fitAD(x, y, criterion, max_depth):
-    # print("[Árvore de Decisão] Selecionando hiperparâmetros...")
-    # listMaxDepth = range(1, 50)
-    # configTree = {'criterion':['gini','entropy'],'max_depth':listMaxDepth}
-    clf = DecisionTreeClassifier(criterion = criterion, max_depth = max_depth)
+    print("[Árvore de Decisão] Selecionando hiperparâmetros...")
+    listMaxDepth = range(1, 50)
+    configTree = {'criterion':['gini','entropy'],'max_depth':listMaxDepth}
+    clf = GridSearchCV(DecisionTreeClassifier(), configTree)
+#     clf = DecisionTreeClassifier(criterion = criterion, max_depth = max_depth)
     
     print("[Árvore de Decisão] Treinando modelos...")
     clf.fit(x, y)
     
-    #params = clf.best_params_
-    #print("Parâmetros escolhidos para Árvore de Decisão: ", clf.best_params_)
+    params = clf.best_params_
+    print("Parâmetros escolhidos para Árvore de Decisão: ", clf.best_params_)
     #tree = DecisionTreeClassifier(criterion = params['criterion'], max_depth=params['max_depth'])
     #return tree
     return clf
@@ -206,29 +207,20 @@ def predictAD(tree, x, y, x_test):
 
 
 # Função responsável por treinar o SVM e escolher os melhores hiperparâmetros por meio de grid-search
-def fitSVM(x, y, kernel, C):
-    # print("[SVM] Selecionando hiperparâmetros...")
-    # model = SVC(gamma='auto')
-    # configSVM = [{'kernel': ['rbf'], 'C': 2 ** np.arange(-5.0, 16.0, 2),
-    #                              'gamma': 2 ** np.arange(-15.0, 4.0, 2)},
-    #              {'kernel': ['poly'], 'C': 2 ** np.arange(-5.0, 16.0, 2),
-    #                                'degree': np.arange(2, 6)},
-    #              {'kernel': ['linear'], 'C': 2 ** np.arange(-5.0, 16.0, 2)}]
+def fitSVM(x, y):
+    print("[SVM] Selecionando hiperparâmetros...")
+    #     model = SVC(gamma='auto')
+    configSVM = [{'kernel': ['rbf'], 'C': 2 ** np.arange(-5.0, 16.0, 2), 'gamma': 2 ** np.arange(-15.0, 4.0, 2)},
+                 {'kernel':['poly'], 'C': 2 ** np.arange(-5.0, 16.0, 2),'degree': np.arange(2, 6)},
+                 {'kernel': ['linear'], 'C': 2 ** np.arange(-5.0, 16.0, 2)}]
 
-    clf = SVC(gamma='auto', kernel = kernel, C = C)
-    
+    model = GridSearchCV(SVC(), configSVM)
+ 
     print("[SVM] Treinando Modelo...")
-    clf.fit(x, y)
+    model.fit(x, y)
+    print("[SVM] Hiperparâmetros escolhidos para SVM: ", model.best_params_)
+    return model
     
-    #params = 
-    # print("[SVM] Hiperparâmetros escolhidos para SVM: ", clf.best_params_)
-    
-    #if(params['kernel']=='rbf'):
-    #    svm = SVC(kernel = params['kernel'], C = params['C'], gamma = params['gamma'])
-    #if(params['kernel']=='poly'):
-    #    svm = SVC(gamma = 'auto', kernel = params['kernel'], C = params['C'], degree = params['degree'])
-    #return svm
-    return clf
 
 # Função que prediz a classe de um conjunto ou um único registro
 def predictSVM(svm, x, y, x_test):
@@ -245,18 +237,18 @@ def predictSVM(svm, x, y, x_test):
 
 # Função responsável por treinar o Random Forest e escolher os melhores hiperparâmetros por meio de grid-search
 def fitRF(x, y, criterion, n_estimators, max_depth):
-    # print("[RANDOM FOREST] Selecionando hiperparâmetros...")
-    # listEstimators = range(100, 150)
-    # listMaxDepth = range(1, 10)
+    print("[RANDOM FOREST] Selecionando hiperparâmetros...")
+    listEstimators = range(100, 150)
+    listMaxDepth = range(1, 10)
    
-    # configRandom = {'criterion':['gini','entropy'],'n_estimators':listEstimators, 'max_depth':listMaxDepth}
-    clf = RandomForestClassifier(criterion = criterion, n_estimators = n_estimators, max_depth=max_depth)
-    
+    configRandom = {'criterion':['gini','entropy'],'n_estimators':listEstimators, 'max_depth':listMaxDepth}
+#     clf = RandomForestClassifier(criterion = criterion, n_estimators = n_estimators, max_depth=max_depth)
+    clf = GridSearchCV(RandomForestClassifier(), configRandom)
     print("[RANDOM FOREST] Treinando modelo...")
     clf.fit(x,y)
     
     #params = clf.best_params_
-    #print("[RANDOM FOREST] Hiperparâmetros escolhidos para Radom Forest: ", clf.best_params_)
+    print("[RANDOM FOREST] Hiperparâmetros escolhidos para Radom Forest: ", clf.best_params_)
     
     #randomForest = RandomForestClassifier(criterion = params['criterion'], max_depth=params['max_depth'], n_estimators=params['n_estimators'])
     #return randomForest
