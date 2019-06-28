@@ -238,8 +238,8 @@ def predictSVM(svm, x, y, x_test):
 # Função responsável por treinar o Random Forest e escolher os melhores hiperparâmetros por meio de grid-search
 def fitRF(x, y, criterion, n_estimators, max_depth):
     print("[RANDOM FOREST] Selecionando hiperparâmetros...")
-    listEstimators = [5, 10, 15]
-    listMaxDepth = range(1, 4)
+    listEstimators = range(100, 150)
+    listMaxDepth = range(1, 10)
    
     configRandom = {'criterion':['gini','entropy'],'n_estimators':listEstimators, 'max_depth':listMaxDepth}
 #     clf = RandomForestClassifier(criterion = criterion, n_estimators = n_estimators, max_depth=max_depth)
