@@ -236,7 +236,7 @@ def predictSVM(svm, x, y, x_test):
 
 
 # Função responsável por treinar o Random Forest e escolher os melhores hiperparâmetros por meio de grid-search
-def fitRF(x, y, criterion, n_estimators, max_depth):
+def fitRF(x, y):
     print("[RANDOM FOREST] Selecionando hiperparâmetros...")
     listEstimators = range(100, 150)
     listMaxDepth = range(1, 10)
