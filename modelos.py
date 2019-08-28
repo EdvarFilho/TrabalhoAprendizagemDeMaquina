@@ -15,6 +15,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -109,12 +110,9 @@ def distance_euclidian(x1, x2):
 def distance_manhattan(x1, x2):
     return np.sum([abs(i-j) for i, j in zip(x1,x2)])
 
-def getClasses(y):
-    return pd.array(y).unique()
-
 # Função responsável por predizer a classe de um único registro
 def predict1KNN(x, y, x_teste, k, function):
-    classes = getClasses(y)
+    classes = np.unique(y)
     results = []
     for i in range(0, x.shape[0]):
         results.append([function(x[i], x_teste), y[i]])
@@ -138,10 +136,21 @@ def predict1KNN(x, y, x_teste, k, function):
     return contClasses[maximo[1]][0]
 
 # Função utilizada para predizer as classes de um conjunto de registros
-def predictKNN(x, y, x_test, k, function):
+def predictKNN(x, y, x_test, function):
     print("[KNN] Treinando modelo...")
+    lista_k = [3,5,7,9,11]
+    hiperparamKNN = {'n_neighbors': lista_k}
+    
+    model = GridSearchCV(KNeighborsClassifier(), hiperparamKNN)
+    
+    print("[KNN] Treinando modelos...")
+    model.fit(x, y)
+    
+    params = clf.best_params_
+    print("Parâmetros escolhidos para KNN: ", model.best_params_)
+    
     print("[KNN] Testando modelo...")
-    yPredito = [predict1KNN(x, y, row, k, function) for row in x_test]
+    yPredito = [predict1KNN(x, y, row, model.best_params_['n_neighbors'], function) for row in x_test]
     return yPredito
 
 # Função responsável por treinar a Árvore de Decisão e escolher os melhores hiperparâmetros por meio de grid-search
