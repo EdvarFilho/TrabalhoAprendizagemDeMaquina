@@ -143,10 +143,9 @@ def predictKNN(x, y, x_test, function):
     
     model = GridSearchCV(KNeighborsClassifier(), hiperparamKNN)
     
-    print("[KNN] Treinando modelos...")
     model.fit(x, y)
     
-    params = clf.best_params_
+    params = model.best_params_
     print("Parâmetros escolhidos para KNN: ", model.best_params_)
     
     print("[KNN] Testando modelo...")
