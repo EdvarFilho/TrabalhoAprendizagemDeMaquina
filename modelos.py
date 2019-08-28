@@ -1,11 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-
-# #### 1. Importando as classes
-
-# In[1]:
-
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -25,13 +19,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# #### 2. Modelos
-# 
-# ##### 2.1 Regressão Logística
-
-# In[2]:
-
-
 # Função que computa a função logística (sigmóide)
 def sigmoide(row, w):
     yPred = 1/(1+np.exp(-row @ w))
@@ -45,7 +32,7 @@ def fitRL(x, y, n_epochs, alpha):
     aux = np.ones((x.shape[0], 1))
     x = np.hstack((aux, x))
     
-    for epochs in range (0,n_epochs):
+    for epochs in range (0, n_epochs):
         suma = 0
         sumErro = 0
         for i in range(0, x.shape[0]):
@@ -69,12 +56,6 @@ def predictRL(w, x):
         else:
             yPredito.append(0)
     return yPredito
-
-
-# ##### 2.2 Análise de Discriminante Gaussiano
-
-# In[3]:
-
 
 # Função responsável para "treinar" que gera os dados estatísticos necessários para o modelo de 
 # Análise de Discriminante Gaussiano
@@ -121,12 +102,6 @@ def predictAGD(model, x_test):
     yPredito = np.array([predict1AGD(model, row) for row in x_test])
     return yPredito
 
-
-# ##### 2.3 K Nearest Neighbors
-
-# In[4]:
-
-
 # Funções que realizam os cálculos de distância entre dois registros
 def distance_euclidian(x1, x2):
     return sqrt(np.sum([abs(i - j) for i, j in zip(x1,x2)]))
@@ -139,7 +114,6 @@ def getClasses(y):
 
 # Função responsável por predizer a classe de um único registro
 def predict1KNN(x, y, x_teste, k, function):
-    
     classes = getClasses(y)
     results = []
     for i in range(0, x.shape[0]):
@@ -170,12 +144,6 @@ def predictKNN(x, y, x_test, k, function):
     yPredito = [predict1KNN(x, y, row, k, function) for row in x_test]
     return yPredito
 
-
-# ##### 2.4 Árvore de Decisão
-
-# In[5]:
-
-
 # Função responsável por treinar a Árvore de Decisão e escolher os melhores hiperparâmetros por meio de grid-search
 def fitAD(x, y, criterion, max_depth):
     print("[Árvore de Decisão] Selecionando hiperparâmetros...")
@@ -200,12 +168,6 @@ def predictAD(tree, x, y, x_test):
     yPredito = tree.predict(x_test)
     return yPredito
 
-
-# ##### 2.5 Support Vector Machine
-
-# In[6]:
-
-
 # Função responsável por treinar o SVM e escolher os melhores hiperparâmetros por meio de grid-search
 def fitSVM(x, y):
     print("[SVM] Selecionando hiperparâmetros...")
@@ -228,12 +190,6 @@ def predictSVM(svm, x, y, x_test):
     print("[SVM] Testando Modelo...")
     yPredito = svm.predict(x_test)
     return yPredito
-
-
-# ##### 2.6 Random Forest
-
-# In[7]:
-
 
 # Função responsável por treinar o Random Forest e escolher os melhores hiperparâmetros por meio de grid-search
 def fitRF(x, y):

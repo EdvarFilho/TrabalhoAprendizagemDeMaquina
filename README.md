@@ -1,5 +1,5 @@
-# Trabalho de Aprendizagem de Máquina
+### Detectando Fake News em Manchetes - Uma Comparação de Modelos de Aprendizagem de Máquina
+##### Andreza Fernandes e Manuel Edvar
+O presente [trabalho](Analisador de Fake News.ipynb), desenvolvido na **disciplina de Aprendizagem de Máquina**, do curso de Ciência da Computação, Departamento de Computação **na Universidade Federal do Ceará**, **ministrada pelo professor César Lincoln**, visa apresentar um procedimento de treinamento de modelos para classificar notícias como verdadeiras ou falsas a partir de suas manchetes.  O conjunto de dados utilizado, disponível no [Kaggle](https://www.kaggle.com/jruvika/fake-news-detection), é composto de notícias de diferentes fontes sobre diferentes temas.  Após uma metodologia de pré-processamento dos dados, 6 modelos tradicionais de aprendizagem de máquina são usados e comparados na tarefa de classificação da veracidade da notícia apenas a partir das palavras em sua manchete.  Por fim, os resultados obtidos são analisados e novas investigações são propostas.
 
-## Equipe:
-#### Andreza Fernandes
-#### Manuel Edvar
+Mais informações sobre o procedimento acesse [aqui]().
